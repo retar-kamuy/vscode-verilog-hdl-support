@@ -8,11 +8,13 @@ import {
     DiagnosticSeverity,
     DiagnosticCollection,
     languages,
+    Uri,
 } from 'vscode';
 import * as child from 'child_process';
 import BaseLinter from './BaseLinter';
-import { join } from 'path';
+import * as path from 'path';
 import { Logger, LogSeverity } from '../Logger';
+import FileStream from 'antlr4/FileStream';
 
 var isWindows = process.platform === 'win32';
 
@@ -56,7 +58,7 @@ export default class VerilatorLinter extends BaseLinter {
         let terms = line.split(':');
 
         for (var i = 0; i < terms.length; i++) {
-            if (terms[i] == ' ') {
+            if (terms[i] === ' ') {
                 terms.splice(i, 1);
                 i--;
             } else {
@@ -83,16 +85,16 @@ export default class VerilatorLinter extends BaseLinter {
         this.logger.log('verilator lint requested');
         let docUri: string = doc.uri.fsPath; //path of current doc
         let lastIndex: number =
-            isWindows == true
+            isWindows
                 ? docUri.lastIndexOf('\\')
                 : docUri.lastIndexOf('/');
         let docFolder = docUri.substr(0, lastIndex); //folder of current doc
         let runLocation: string =
-            this.runAtFileLocation == true ? docFolder : workspace.rootPath; //choose correct location to run
-        let svArgs: string = doc.languageId == 'systemverilog' ? '-sv' : ''; //Systemverilog args
+            this.runAtFileLocation ? docFolder : workspace.rootPath; //choose correct location to run
+        let svArgs: string = doc.languageId === 'systemverilog' ? '-sv' : ''; //Systemverilog args
         let verilator: string = 'verilator';
         if (isWindows) {
-            if (this.useWSL == true) {
+            if (this.useWSL) {
                 verilator = `wsl ${verilator}`;
                 let docUriCmd: string = `wsl wslpath '${docUri}'`;
                 docUri = child
@@ -119,50 +121,53 @@ export default class VerilatorLinter extends BaseLinter {
                 docFolder = docFolder.replace(/\\/g, '/');
             }
         }
-        let command: string =
-            this.verilatorPath +
-            verilator +
-            ' ' +
-            svArgs +
-            ' --lint-only -I' +
-            '"' +
-            docFolder +
-            '" ' +
-            this.verilatorArgs +
-            ' "' +
-            docUri +
-            '"'; //command to execute
+        const command = [
+            path.join(this.verilatorPath, verilator),
+            svArgs,
+            '--lint-only',
+            '-I'+ docFolder,
+            this.verilatorArgs,
+            docUri,
+        ].join(' '); //command to execute
         this.logger.log(command, LogSeverity.command);
 
         var foo: child.ChildProcess = child.exec(
             command,
             { cwd: runLocation },
-            (_error: Error, _stdout: string, stderr: string) => {
-                let diagnostics: Diagnostic[] = [];
+            (error: Error, _stdout: string, stderr: string) => {
+                if (error) {
+                    this.logger.log(error.message, LogSeverity.error);
+                }
+
+                interface Diagnostics {
+                    [filename: string]: Diagnostic[]
+                };
+                const diagnostics: Diagnostics = {};
                 let lines = stderr.split(/\r?\n/g);
 
                 // Parse output lines
                 lines.forEach((line, _) => {
                     // Error for our file
-                    if (line.startsWith('%') && line.indexOf(docUri) > 0) {
-                        let rex = line.match(
-                            /%(\w+)(-[A-Z0-9_]+)?:\s*(\w+:)?(?:[^:]+):\s*(\d+):(?:\s*(\d+):)?\s*(\s*.+)/
-                        );
+                    const re = new RegExp(/%(\w+)(-[A-Z0-9_]+)?:\s*(.*\.[a-zA-Z]+):?(?:[^:]+):\s*(\d+):(?:\s*(\d+):)?\s*(\s*.+)/); //TODO: Test at Old Verilator version
+                    if (line.search(re) !== -1) {
+                        let rex = line.match(re);
 
                         if (rex && rex[0].length > 0) {
                             let severity = this.getSeverity(rex[1]);
+                            //let filename = this.runAtFileLocation ? rex[3] : path.join(workspace.rootPath, rex[3]);
+                            let filename = this.runAtFileLocation ? rex[3] : path.isAbsolute(rex[3]) ? rex[3] : path.join(workspace.rootPath, rex[3]);
                             let lineNum = Number(rex[4]) - 1;
                             let colNum = Number(rex[5]) - 1;
                             let message = rex[6];
                             // Type of warning is in rex[2]
                             colNum = isNaN(colNum) ? 0 : colNum; // for older Verilator versions (< 4.030 ~ish)
-
+                            
                             if (!isNaN(lineNum)) {
                                 console.log(
                                     severity + ': [' + lineNum + '] ' + message
                                 );
 
-                                diagnostics.push({
+                                const diagnostic: Diagnostic = {
                                     severity: severity,
                                     range: new Range(
                                         lineNum,
@@ -173,7 +178,14 @@ export default class VerilatorLinter extends BaseLinter {
                                     message: message,
                                     code: 'verilator',
                                     source: 'verilator',
-                                });
+                                };
+
+                                if (Object.keys(diagnostics).indexOf(filename) === -1) {
+                                    diagnostics[filename] = [diagnostic];
+                                } else {
+                                    diagnostics[filename].push(diagnostic);
+                                }
+                                console.log(filename);
                             }
                         } else {
                             this.logger.log(
@@ -183,10 +195,13 @@ export default class VerilatorLinter extends BaseLinter {
                         }
                     }
                 });
+                this.diagnosticCollection.clear();
                 this.logger.log(
                     diagnostics.length + ' errors/warnings returned'
                 );
-                this.diagnosticCollection.set(doc.uri, diagnostics);
+                for(const filename in diagnostics) {
+                    this.diagnosticCollection.set(Uri.file(filename), diagnostics[filename]);
+                }
             }
         );
     }

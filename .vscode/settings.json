@@ -9,5 +9,9 @@
         "dist": true // set this to false to include "dist" folder in search results
     },
     // Turn off tsc task auto detection since we have the necessary tasks as npm scripts
-    "typescript.tsc.autoDetect": "off"
+    "typescript.tsc.autoDetect": "off",
+    "verilog.linting.linter": "verilator",
+    "verilog.linting.verilator.arguments": "--no-timing -Wall -f tests/FPGAMAG18/filelist.f",
+    "verilog.logging.enabled": true,
+    "verilog.linting.path": "/opt/verilator-v5.002/bin/"
 }
