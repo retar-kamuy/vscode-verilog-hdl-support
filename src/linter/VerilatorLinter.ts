@@ -127,7 +127,7 @@ export default class VerilatorLinter extends BaseLinter {
             '--lint-only',
             '-I'+ docFolder,
             this.verilatorArgs,
-            docUri,
+            docUri, // TODO: Solve duplicate files
         ].join(' '); //command to execute
         this.logger.log(command, LogSeverity.command);
 
