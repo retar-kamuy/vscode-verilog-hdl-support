@@ -148,12 +148,13 @@ export default class VerilatorLinter extends BaseLinter {
                 // Parse output lines
                 lines.forEach((line, _) => {
                     // Error for our file
-                    const re = new RegExp(/%(\w+)(-[A-Z0-9_]+)?:\s*(.*\.[a-zA-Z]+):?(?:[^:]+):\s*(\d+):(?:\s*(\d+):)?\s*(\s*.+)/); //TODO: Test at Old Verilator version
+                    const re = new RegExp(/%(\w+)(-[A-Z0-9_]+)?:\s*(.*\.[a-zA-Z]+):(\d+):(?:\s*(\d+):)?\s*(\s*.+)/);
                     if (line.search(re) !== -1) {
                         let rex = line.match(re);
 
                         if (rex && rex[0].length > 0) {
                             let severity = this.getSeverity(rex[1]);
+                            let code = rex[2] !== undefined ? rex[2].slice(1) : 'verilator';
                             //let filename = this.runAtFileLocation ? rex[3] : path.join(workspace.rootPath, rex[3]);
                             let filename = this.runAtFileLocation ? rex[3] : path.isAbsolute(rex[3]) ? rex[3] : path.join(workspace.rootPath, rex[3]);
                             let lineNum = Number(rex[4]) - 1;
@@ -176,7 +177,7 @@ export default class VerilatorLinter extends BaseLinter {
                                         Number.MAX_VALUE
                                     ),
                                     message: message,
-                                    code: 'verilator',
+                                    code: code,
                                     source: 'verilator',
                                 };
 
