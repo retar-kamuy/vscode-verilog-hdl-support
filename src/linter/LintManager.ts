@@ -39,8 +39,8 @@ export default class LintManager {
         return new ModelsimLinter(this.diagnosticCollection, this.logger);
       case 'verilator':
         return new VerilatorLinter(this.diagnosticCollection, this.logger);
-        case 'slang':
-          return new SlangLinter(this.diagnosticCollection, this.logger);
+      case 'slang':
+        return new SlangLinter(this.diagnosticCollection, this.logger);
       default:
         return null;
     }
