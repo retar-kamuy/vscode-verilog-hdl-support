@@ -2,7 +2,7 @@
   "name": "veriloghdl",
   "displayName": "Verilog-HDL/SystemVerilog/Bluespec SystemVerilog",
   "description": "Verilog-HDL/SystemVerilog/Bluespec SystemVerilog support for VS Code",
-  "version": "1.10.0",
+  "version": "1.13.1",
   "publisher": "mshr-h",
   "homepage": "https://github.com/mshr-h/vscode-verilog-hdl-support",
   "repository": {
@@ -28,6 +28,7 @@
     "onLanguage:bsv",
     "onLanguage:vhdl",
     "onLanguage:ucf",
+    "onLanguage:tcl",
     "onLanguage:sdc",
     "onLanguage:xdc",
     "onLanguage:verilog-filelist"
@@ -109,6 +110,19 @@
         "configuration": "./configs/sdc.configuration.json"
       },
       {
+        "id": "tcl",
+        "aliases": [
+            "Tcl",
+            "tcl"
+        ],
+        "extensions": [
+            ".tcl",
+            "tm",
+            "tk"
+        ],
+        "configuration": "./configs/tcl.configuration.json"
+      },
+      {
         "id": "xdc",
         "aliases": [
           "Xilinx Design Constraints"
@@ -160,6 +174,11 @@
         "language": "sdc",
         "scopeName": "source.sdc",
         "path": "./syntaxes/sdc.tmLanguage.json"
+      },
+      {
+        "language": "tcl",
+        "scopeName": "source.tcl",
+        "path": "./syntaxes/tcl.tmlanguage.json"
       },
       {
         "language": "xdc",
@@ -295,6 +314,33 @@
           "default": "",
           "description": "Add Modelsim work library here."
         },
+        "verilog.linting.slang.arguments": {
+          "scope": "window",
+          "type": "string",
+          "default": "",
+          "description": "Add Slang arguments here (like macros). They will be added to Slang while linting (The command \"-I=<document folder>\" will be added by the linter by default)."
+        },
+        "verilog.linting.slang.includePath": {
+          "scope": "window",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "description": "A list of directory paths to use while Slang linting."
+        },
+        "verilog.linting.slang.runAtFileLocation": {
+          "scope": "window",
+          "type": "boolean",
+          "default": false,
+          "description": "If enabled, Slang will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default."
+        },
+        "verilog.linting.slang.useWSL": {
+          "scope": "window",
+          "type": "boolean",
+          "default": false,
+          "description": "If enabled, run slang in WSL."
+        },
         "verilog.linting.verilator.arguments": {
           "scope": "window",
           "type": "string",
@@ -401,11 +447,35 @@
           "default": false,
           "description": "[Experimental] Enable HDL Checker Language Server for Verilog-HDL, SystemVerilog, and VHDL."
         },
+        "verilog.languageServer.veribleVerilogLs.enabled": {
+          "scope": "window",
+          "type": "boolean",
+          "default": false,
+          "description": "[Experimental] Enable verible-verilog-ls Language Server for SystemVerilog."
+        },
+        "verilog.languageServer.veribleVerilogLs.path": {
+          "scope": "window",
+          "type": "string",
+          "default": "verible-verilog-ls",
+          "description": "[Experimental] A path to the verible-verilog-ls Language Server binary."
+        },
         "verilog.languageServer.hdlChecker.path": {
           "scope": "window",
           "type": "string",
           "default": "hdl_checker",
           "description": "[Experimental] A path to the HDL Checker Language Server binary."
+        },
+        "verilog.languageServer.rustHdl.enabled": {
+          "scope": "window",
+          "type": "boolean",
+          "default": false,
+          "description": "[Experimental] Enable Rust hdl Language Server for VHDL."
+        },
+        "verilog.languageServer.rustHdl.path": {
+          "scope": "window",
+          "type": "string",
+          "default": "vhdl_ls",
+          "description": "[Experimental] A path to the Rust hdl Language Server binary."
         },
         "verilog.formatting.verilogHDL.formatter": {
           "scope": "window",
@@ -508,34 +578,32 @@
     "antlr4": "^4.11.0",
     "antlr4ts": "^0.5.0-alpha.4",
     "semver": "^7.3.8",
-    "vscode-languageclient": "^8.0.2",
-    "which": "^3.0.0"
+    "vscode-languageclient": "^9.0.0",
+    "which": "^4.0.0"
   },
   "devDependencies": {
     "@types/antlr4": "4.11.2",
     "@types/glob": "^8.0.0",
     "@types/mocha": "~10.0.1",
-    "@types/node": "~18.11.13",
+    "@types/node": "~20.8.0",
     "@types/vscode": "^1.74.0",
-    "@types/which": "^2.0.1",
-    "@typescript-eslint/eslint-plugin": "^5.48.0",
-    "@typescript-eslint/parser": "^5.48.0",
+    "@types/which": "^3.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
     "@vscode/test-electron": "^2.2.1",
-    "@vscode/vsce": "~2.16.0",
+    "@vscode/vsce": "~2.20.0",
     "antlr4ts-cli": "0.5.0-alpha.4",
-    "esbuild": "^0.16.4",
-    "eslint": "^8.31.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-airbnb-typescript": "^17.0.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-config-standard": "17.0.0",
-    "eslint-plugin-import": "2.26.0",
+    "esbuild": "^0.18.0",
+    "eslint": "8.46.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-config-standard": "17.1.0",
+    "eslint-plugin-import": "2.28.0",
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-promise": "6.1.1",
-    "glob": "^8.0.3",
+    "glob": "^10.0.0",
     "mocha": "^10.2.0",
     "ts-loader": "^9.4.2",
-    "typescript": "4.9.4"
+    "typescript": "5.1.6"
   },
   "__metadata": {
     "id": "feb7e3b5-7d35-4f95-a3d2-61eeaa12efa5",

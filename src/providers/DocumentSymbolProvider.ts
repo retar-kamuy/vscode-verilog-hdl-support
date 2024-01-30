@@ -1,12 +1,14 @@
+// SPDX-License-Identifier: MIT
 import * as vscode from 'vscode';
 import { BsvInfoProviderManger } from '../BsvProvider';
 import { CtagsManager, Symbol } from '../ctags';
+import { Logger } from '../logger';
 
 export class VerilogDocumentSymbolProvider implements vscode.DocumentSymbolProvider {
   public docSymbols: vscode.DocumentSymbol[] = [];
 
-  private logger: vscode.LogOutputChannel;
-  constructor(logger: vscode.LogOutputChannel) {
+  private logger: Logger;
+  constructor(logger: Logger) {
     this.logger = logger;
   }
 
@@ -117,8 +119,8 @@ export class VerilogDocumentSymbolProvider implements vscode.DocumentSymbolProvi
 }
 
 export class BsvDocumentSymbolProvider implements vscode.DocumentSymbolProvider {
-  private logger: vscode.LogOutputChannel;
-  constructor(logger: vscode.LogOutputChannel) {
+  private logger: Logger;
+  constructor(logger: Logger) {
     this.logger = logger;
   }
 

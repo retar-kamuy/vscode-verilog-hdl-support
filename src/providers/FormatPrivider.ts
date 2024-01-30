@@ -1,9 +1,11 @@
+// SPDX-License-Identifier: MIT
 import * as vscode from 'vscode';
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as crypto from 'crypto';
 import * as path from 'path';
+import { Logger } from '../logger';
 
 // handle temporary file
 class TemporaryFile {
@@ -37,10 +39,10 @@ class TemporaryFile {
 abstract class FileBasedFormattingEditProvider implements vscode.DocumentFormattingEditProvider {
   private namespace: string;
   private tmpFileExt: string; // .v, .sv, .vhd
-  public logger: vscode.LogOutputChannel;
+  public logger: Logger;
   public config: vscode.WorkspaceConfiguration;
 
-  constructor(namespace: string, tmpFileExt: string, logger: vscode.LogOutputChannel) {
+  constructor(namespace: string, tmpFileExt: string, logger: Logger) {
     this.namespace = namespace;
     this.logger = logger;
     this.tmpFileExt = tmpFileExt;
@@ -135,9 +137,9 @@ class VeribleVerilogFormatEditProvider extends FileBasedFormattingEditProvider {
 }
 
 export class VerilogFormatProvider implements vscode.DocumentFormattingEditProvider {
-  private logger: vscode.LogOutputChannel;
+  private logger: Logger;
 
-  constructor(logger: vscode.LogOutputChannel) {
+  constructor(logger: Logger) {
     this.logger = logger;
   }
 
@@ -175,9 +177,9 @@ export class VerilogFormatProvider implements vscode.DocumentFormattingEditProvi
 }
 
 export class SystemVerilogFormatProvider implements vscode.DocumentFormattingEditProvider {
-  private logger: vscode.LogOutputChannel;
+  private logger: Logger;
 
-  constructor(logger: vscode.LogOutputChannel) {
+  constructor(logger: Logger) {
     this.logger = logger;
   }
 

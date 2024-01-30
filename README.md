@@ -2,7 +2,8 @@
 
 HDL support for VS Code with Syntax Highlighting, Snippets, Linting, Formatting and much more!
 
-[![Build Status](https://github.com/mshr-h/vscode-verilog-hdl-support/workflows/.github/workflows/ci.yml/badge.svg?branch=master&event=push)](https://github.com/mshr-h/vscode-verilog-hdl-support/actions?query=workflow%3A.github%2Fworkflows%2Fci.yml)
+[![Install Count](https://img.shields.io/visual-studio-marketplace/i/mshr-h.VerilogHDL.svg)](https://marketplace.visualstudio.com/items?itemName=mshr-h.VerilogHDL)
+[![Download Count](https://img.shields.io/visual-studio-marketplace/d/mshr-h.VerilogHDL.png)](https://marketplace.visualstudio.com/items?itemName=mshr-h.VerilogHDL)
 
 ![sample](images/sample.gif)
 
@@ -20,12 +21,14 @@ Install it from [VS Code Marketplace](https://marketplace.visualstudio.com/items
   - Vivado UCF constraints
   - Synopsys Design Constraints
   - Verilog Filelists (dot-F files)
+  - Tcl
 - Simple Snippets
 - Linting support from:
   - Icarus Verilog - `iverilog`
-  - Vivado Logical Simulation - `xvlog`
   - Modelsim - `modelsim`
   - Verilator - `verilator`
+  - Vivado Logical Simulation - `xvlog`
+  - \[Experimental\] Slang - `slang`
 - Linting support
   - Bluespec SystemVerilog
 - Ctags Integration
@@ -38,6 +41,8 @@ Install it from [VS Code Marketplace](https://marketplace.visualstudio.com/items
   - [svls](https://github.com/dalance/svls)
   - [veridian](https://github.com/vivekmalneedi/veridian)
   - [HDL Checker](https://github.com/suoto/hdl_checker)
+  - [verible-verilog-ls](https://github.com/chipsalliance/verible)
+  - [rust_hdl](https://github.com/VHDL-LS/rust_hdl)
 - \[Experimental\] Formatting support from:
   - [verilog-format](https://github.com/ericsonj/verilog-format)
   - [istyle-verilog-formatter](https://github.com/thomasrussellmurphy/istyle-verilog-formatter)
@@ -51,6 +56,22 @@ Install it from [VS Code Marketplace](https://marketplace.visualstudio.com/items
 ### Ctags Integration
 
 This extension uses the tags created using Ctags to provide many of its features. It is recommended to use [Universal Ctags](https://github.com/universal-ctags/ctags) as it supports SystemVerilog also, compared to Exuberant Ctags and other older versions. The tags are stored in memory and not as separate files.
+
+Currently the integrated feature supports only tags in the currently opened file, not tags in other files.
+However, you can use other independent Ctags extensions to find definitions from any file.
+
+For example [Ctags Companion](https://github.com/gediminasz/ctags-companion) works well with this extension
+by adding the following settings on `.vscode/settings.json` in your workspace.
+
+```json
+{
+    "ctags-companion.command": "ctags -R --fields=+nKz -f .vscode/.tags --langmap=SystemVerilog:+.v -R rtl /opt/uvm-1.2/src",
+    "ctags-companion.readtagsEnabled": true,
+}
+```
+
+It searches for definitions not only in the workspace, but also in files outside the workspace (ex. `/opt/uvm-1.2/src` in the example above).
+It also supports the `readtags` command included in Universal Ctags, allowing for fast searches from large workspaces.
 
 #### Installation of Universal Ctags
 
@@ -82,6 +103,8 @@ If you encounter any problems even if it's not related to this feature, **deleti
 | [svls](https://github.com/dalance/svls)                        | not supported | enabled       | not supported |
 | [veridian](https://github.com/vivekmalneedi/veridian)          | not supported | enabled       | not supported |
 | [HDL Checker](https://github.com/suoto/hdl_checker)            | enabled       | enabled       | enabled       |
+| [verible-verilog-ls](https://github.com/chipsalliance/verible) | not supported | enabled       | not supported |
+| [rust_hdl](https://github.com/VHDL-LS/rust_hdl)                | not supported | not supported | enabled       |
 
 ### Formatting (Experimental)
 
@@ -105,6 +128,7 @@ Use the following settings to configure the extension to your needs.
 
   - `iverilog`
   - `modelsim`
+  - `slang`
   - `verilator`
   - `xvlog`
   - `none`
@@ -130,6 +154,24 @@ Use the following settings to configure the extension to your needs.
 - `verilog.linting.modelsim.work` (Default: nothing)
 
     Add custom work library to Modelsim for linting.
+
+- `verilog.linting.slang.arguments` (Default: nothing)
+
+    Add Slang arguments here (like macros). They will be added to Slang while linting (The command \"-I=<document folder>\" will be added by the linter by default).
+
+- `verilog.linting.slang.includePath` (Default: nothing)
+
+    A list of directory paths to use while Slang linting.
+
+- `verilog.linting.slang.runAtFileLocation` (Default: `false` )
+
+    If enabled, Slang will be run at the file location for linting. Else it will be run at workspace folder. Disabled by default.
+
+- `verilog.linting.slang.useWSL` (Default: `false` )
+
+    Run verilator under WSL. Paths generated automatically by the extension (the path to the Verilog file as well as
+    the auto-generated document folder for `-I` ) are translated to WSL paths using the `wslpath` program.
+    Any other paths you specify in `verilog.linting.includePath.arguments`
 
 - `verilog.linting.verilator.arguments` (Default: nothing)
 
@@ -190,6 +232,22 @@ Use the following settings to configure the extension to your needs.
 - `verilog.languageServer.hdlChecker.path` (Default: `hdl_checker`)
 
     \[Experimental\] A path to the HDL Checker Language Server binary.
+
+- `verilog.languageServer.veribleVerilogLs.enabled` (Default: `false`)
+
+    \[Experimental\] Enable verible-verilog-ls Language Server for SystemVerilog.
+
+- `verilog.languageServer.veribleVerilogLs.path` (Default: `verible-verilog-ls`)
+
+    \[Experimental\] A path to the verible-verilog-ls Language Server binary.
+
+- `verilog.languageServer.rustHdl.enabled` (Default: `false`)
+
+    \[Experimental\] Enable rust_hdl Language Server for VHDL.
+
+- `verilog.languageServer.rustHdl.path` (Default: `vhdl_ls`)
+
+    \[Experimental\] A path to the rust_hdl Language Server binary.
 
 - `verilog.formatting.verilogHDL.formatter` (Default: `verilog-format`)
 
@@ -274,3 +332,6 @@ You can check it by opening the **Output** pane in VS Code and choose _Verilog_ 
 - [chipsalliance/verible](https://github.com/chipsalliance/verible)
 - [ericsonj/verilog-format](https://github.com/ericsonj/verilog-format)
 - [thomasrussellmurphy/istyle-verilog-formatter](https://github.com/thomasrussellmurphy/istyle-verilog-formatter)
+- [slang C++ docs](https://sv-lang.com/)
+- [bitwisecook/vscode-tcl: Tcl for Visual Studio Code](https://github.com/bitwisecook/vscode-tcl)
+  - `configs/tcl.configuration.json` and `syntaxes/tcl.tmlanguage.json` are obtained from the repo.

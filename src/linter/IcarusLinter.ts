@@ -1,7 +1,9 @@
+// SPDX-License-Identifier: MIT
 import * as vscode from 'vscode';
 import * as child from 'child_process';
 import * as path from 'path';
 import BaseLinter from './BaseLinter';
+import { Logger } from '../logger';
 
 let standardToArg: Map<string, string> = new Map<string, string>([
   ['Verilog-95', '-g1995'],
@@ -20,7 +22,7 @@ export default class IcarusLinter extends BaseLinter {
   private standards: Map<string, string>;
   private runAtFileLocation: boolean;
 
-  constructor(diagnosticCollection: vscode.DiagnosticCollection, logger: vscode.LogOutputChannel) {
+  constructor(diagnosticCollection: vscode.DiagnosticCollection, logger: Logger) {
     super('iverilog', diagnosticCollection, logger);
     vscode.workspace.onDidChangeConfiguration(() => {
       this.updateConfig();
@@ -43,26 +45,41 @@ export default class IcarusLinter extends BaseLinter {
     this.runAtFileLocation = <boolean>this.configuration.get('runAtFileLocation');
   }
 
+  protected convertToSeverity(severityString: string): vscode.DiagnosticSeverity {
+    switch (severityString) {
+      case 'error':
+        return vscode.DiagnosticSeverity.Error;
+      case 'warning':
+        return vscode.DiagnosticSeverity.Warning;
+    }
+    return vscode.DiagnosticSeverity.Information;
+  }
+
   protected lint(doc: vscode.TextDocument) {
+    this.logger.info('Executing IcarusLinter.lint()');
+
     let binPath: string = path.join(this.linterInstalledPath, 'iverilog');
+    this.logger.info('iverilog binary path: ' + binPath);
 
     let args: string[] = [];
     args.push('-t null');
 
     args.push(standardToArg.get(this.standards.get(doc.languageId)));
-    args = args.concat(this.includePath.map((path: string) => '-I ' + path));
+    args = args.concat(this.includePath.map((path: string) => '-I "' + path + '"'));
     args.push(this.arguments);
-    args.push(doc.uri.fsPath);
+    args.push('"' + doc.uri.fsPath + '"');
 
     let command: string = binPath + ' ' + args.join(' ');
 
-    let cwd: string = this.runAtFileLocation
-      ? path.dirname(doc.uri.fsPath)
-      : vscode.workspace.workspaceFolders[0].uri.fsPath;
+    // TODO: We have to apply the the #419 fix?
+    let cwd: string =
+      this.runAtFileLocation || vscode.workspace.workspaceFolders === undefined
+        ? path.dirname(doc.uri.fsPath)
+        : vscode.workspace.workspaceFolders[0].uri.fsPath;
 
-    this.logger.info('[iverilog-lint] Execute');
-    this.logger.info('[iverilog-lint]   command: ' + command);
-    this.logger.info('[iverilog-lint]   cwd    : ' + cwd);
+    this.logger.info('Execute');
+    this.logger.info('  command: ', command);
+    this.logger.info('  cwd    : ', cwd);
 
     var _: child.ChildProcess = child.exec(
       command,
@@ -89,17 +106,7 @@ export default class IcarusLinter extends BaseLinter {
               source: 'iverilog',
             });
           } else if (terms.length >= 4) {
-            let sev: vscode.DiagnosticSeverity;
-            switch (terms[2].trim()) {
-              case 'error':
-                sev = vscode.DiagnosticSeverity.Error;
-                break;
-              case 'warning':
-                sev = vscode.DiagnosticSeverity.Warning;
-                break;
-              default:
-                sev = vscode.DiagnosticSeverity.Information;
-            }
+            let sev: vscode.DiagnosticSeverity = this.convertToSeverity(terms[2].trim());
             diagnostics.push({
               severity: sev,
               range: new vscode.Range(lineNum, 0, lineNum, Number.MAX_VALUE),
@@ -110,7 +117,7 @@ export default class IcarusLinter extends BaseLinter {
           }
         });
         if (diagnostics.length > 0) {
-          this.logger.info('[iverilog-lint] ' + diagnostics.length + ' errors/warnings returned');
+          this.logger.info(diagnostics.length + ' errors/warnings returned');
         }
         this.diagnosticCollection.set(doc.uri, diagnostics);
       }

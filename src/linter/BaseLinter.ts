@@ -1,16 +1,14 @@
+// SPDX-License-Identifier: MIT
 import * as vscode from 'vscode';
 import * as path from 'path';
+import { Logger } from '../logger';
 
 export default abstract class BaseLinter {
   protected diagnosticCollection: vscode.DiagnosticCollection;
   name: string;
-  protected logger: vscode.LogOutputChannel;
+  protected logger: Logger;
 
-  constructor(
-    name: string,
-    diagnosticCollection: vscode.DiagnosticCollection,
-    logger: vscode.LogOutputChannel
-  ) {
+  constructor(name: string, diagnosticCollection: vscode.DiagnosticCollection, logger: Logger) {
     this.diagnosticCollection = diagnosticCollection;
     this.name = name;
     this.logger = logger;
@@ -32,5 +30,6 @@ export default abstract class BaseLinter {
     this.diagnosticCollection.delete(doc.uri);
   }
 
+  protected abstract convertToSeverity(severityString: string): vscode.DiagnosticSeverity;
   protected abstract lint(doc: vscode.TextDocument);
 }

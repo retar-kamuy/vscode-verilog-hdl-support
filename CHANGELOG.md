@@ -4,7 +4,106 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [1.13.1] - 2024-01-15
+
+### Fixed
+
+- Fix [#102](https://github.com/mshr-h/vscode-verilog-hdl-support/issues/102)
+  - requires [Universal Ctags, Oct 22, 2020 version](https://github.com/universal-ctags/ctags/pull/2666) and later.
+
+## [1.13.0] 2023-08-31
+
+### Added
+
+- Add support for [rust_hdl](https://github.com/VHDL-LS/rust_hdl) Language Server. [#360](https://github.com/mshr-h/vscode-verilog-hdl-support/issues/360)
+
+## [1.12.0] - 2023-08-14
+
+- Update README.md for ctags [#433](https://github.com/mshr-h/vscode-verilog-hdl-support/pull/433)
+- Added syntax highlighting for Tcl [#440](https://github.com/mshr-h/vscode-verilog-hdl-support/pull/440)
+- Updated dependencies [#431](https://github.com/mshr-h/vscode-verilog-hdl-support/pull/431), [#435](https://github.com/mshr-h/vscode-verilog-hdl-support/pull/435), [#437](https://github.com/mshr-h/vscode-verilog-hdl-support/pull/437), [#438](https://github.com/mshr-h/vscode-verilog-hdl-support/pull/438), [#439](https://github.com/mshr-h/vscode-verilog-hdl-support/pull/439)
+
+## [1.11.11] - 2023-06-13
+
+### Fixed
+
+- Fix [#428](https://github.com/mshr-h/vscode-verilog-hdl-support/issues/428)
+
+## [1.11.10] - 2023-06-12
+
+### Fixed
+
+- Fix slang warning message with square brackets [#427](https://github.com/mshr-h/vscode-verilog-hdl-support/pull/427)
+
+## [1.11.9] - 2023-06-09
+
+## Changed
+
+- Improved logging implementation [#412](https://github.com/mshr-h/vscode-verilog-hdl-support/issues/412)
+- Update dependencies (glob to v10, typescript to v5.0.4, and more) [#414](https://github.com/mshr-h/vscode-verilog-hdl-support/issues/414), [#424](https://github.com/mshr-h/vscode-verilog-hdl-support/issues/424), [#425](https://github.com/mshr-h/vscode-verilog-hdl-support/issues/425)
+
+### Fixed
+
+- Refactor linters
+
+## [1.11.8] - 2023-06-09
+
+### Fixed
+
+- Fix Verilator linting include paths [#422](https://github.com/mshr-h/vscode-verilog-hdl-support/issues/422)
+
+## [1.11.7] - 2023-06-08
+
+### Fixed
+
+- Add quotation marks around paths for Slang, Verilator and Xvlog [#420](https://github.com/mshr-h/vscode-verilog-hdl-support/issues/420)
+
+## [1.11.6] - 2023-06-06
+
+### Fixed
+
+- Fixed [#418](https://github.com/mshr-h/vscode-verilog-hdl-support/issues/418) again.
+
+## [1.11.5] - 2023-06-02
+
+### Fixed
+
+- Fixed Slang & Verilator: cant run under WSL [#418](https://github.com/mshr-h/vscode-verilog-hdl-support/issues/418)
+- Fixed [#139](https://github.com/mshr-h/vscode-verilog-hdl-support/issues/139)
+
+## [1.11.4] - 2023-04-19
+
+### Fixed
+
+- Fixed only push diagnostics from Slang in the current file [#415](https://github.com/mshr-h/vscode-verilog-hdl-support/pull/415)
+
+## [1.11.3] - 2023-03-27
+
+### Fixed
+
+- Fixed [#407](https://github.com/mshr-h/vscode-verilog-hdl-support/issues/407). [#411](https://github.com/mshr-h/vscode-verilog-hdl-support/pull/411)
+
+## [1.11.2] - 2023-03-24
+
+### Fixed
+
+- Added more logging messages to be able to debug [#407](https://github.com/mshr-h/vscode-verilog-hdl-support/issues/407). [#410](https://github.com/mshr-h/vscode-verilog-hdl-support/pull/410)
+
+## [1.11.1] - 2023-03-04
+
+### Added
+
+- Re-added experimental support for verible-verilog-ls Language Server. [#404](https://github.com/mshr-h/vscode-verilog-hdl-support/pull/404)
+
+## [1.11.0] - 2023-02-02
+
+### Added
+
+- Added an experimental support for Slang linting. [#387](https://github.com/mshr-h/vscode-verilog-hdl-support/pull/387)
+
 ## [1.10.0] - 2023-01-06
+
+### Added
 
 - Added an experimental option for xvlog linting. [#382](https://github.com/mshr-h/vscode-verilog-hdl-support/pull/382)
   - `verilog.linting.xvlog.includePath` is to specify include directories.
@@ -12,6 +111,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Internal cleanup [#383](https://github.com/mshr-h/vscode-verilog-hdl-support/pull/383)
 
 ## [1.9.0] - 2022-12-29
+
+### Added
 
 - Added experimental options for Icarus Verilog linting. [#379](https://github.com/mshr-h/vscode-verilog-hdl-support/issues/379)
   - `verilog.linting.iverilog.includePath` is to specify include directories.
@@ -24,13 +125,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ## [1.8.1] - 2022-12-26
 
+### Fixed
+
 - Fixed `Instantiate Module` not working issue. [#376](https://github.com/mshr-h/vscode-verilog-hdl-support/issues/376)
 
 ## [1.8.0] - 2022-12-22
 
+### Added
+
 - Added experimental formatting support with verible-verilog-format for the following languages. [#371](https://github.com/mshr-h/vscode-verilog-hdl-support/pull/371)
   - Verilog-HDL
   - SystemVerilog
+
+### Changed
+
 - \[Caution\] Updated config namespace for formatter. [#371](https://github.com/mshr-h/vscode-verilog-hdl-support/pull/371)
   - `verilog.formatter` -> `verilog.formatting`
 - Improved logging implementation. [#374](https://github.com/mshr-h/vscode-verilog-hdl-support/pull/374)
@@ -39,32 +147,51 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ## [1.7.0] - 2022-12-21
 
+### Added
+
 - Added experimental support for Verilog-HDL formatting with the following formatters.
   - [verilog-format](https://github.com/ericsonj/verilog-format) [#364](https://github.com/mshr-h/vscode-verilog-hdl-support/pull/364)
   - [thomasrussellmurphy/istyle-verilog-formatter: Open source implementation of a Verilog formatter](https://github.com/thomasrussellmurphy/istyle-verilog-formatter) [#365](https://github.com/mshr-h/vscode-verilog-hdl-support/pull/365).
 
 ## [1.6.0] - 2022-12-20
 
-- Changes for language server config take effect immediately.
+### Added
+
 - Added experimental support for multiple Language Server [#353](https://github.com/mshr-h/vscode-verilog-hdl-support/issues/353).
   - \[Caution\] Language Server config names has changed!
   - Users may have to reset all the configs related to Language Server feature.
-  - verible-verilog-ls support is temporary dropped because it returns error when stopping.
-- Deprecated `verilog.logging.enabled` option.
-  - Logs are always outputted to the **Verilog** OutputChannel of VS Code in the **Output** pane.
+
+### Removed
+
+- verible-verilog-ls support is temporary dropped because it returns error when stopping.
+
+### Changed
+
+- Changes for language server config take effect immediately.
 - Intenal refactoring [#363](https://github.com/mshr-h/vscode-verilog-hdl-support/pull/363)
 
+### Removed
+
+- Deprecated `verilog.logging.enabled` option.
+  - Logs are always outputted to the **Verilog** OutputChannel of VS Code in the **Output** pane.
+
 ## [1.5.13] - 2022-12-12
+
+### Added
 
 - Adds basic syntax highlighting for Verilog Filelists (dot-F files).
 - Add support for [verible-verilog-ls](https://github.com/chipsalliance/verible/tree/master/verilog/tools/ls) Language Server.
 
 ## [1.5.12] - 2022-12-04
 
+### Fixed
+
 - Fix hdl_checker support.
 - Some internal update.
 
 ## [1.5.11] - 2022-11-19
+
+### Added
 
 - Add VHDL support with syntax highlighting.
 - Enable hdl_checker for VHDL files.
@@ -72,19 +199,27 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ## [1.5.10] - 2022-11-17
 
+### Added
+
 - Add support for [vivekmalneedi/veridian](https://github.com/vivekmalneedi/veridian) Language Server.
 - Add support for [suoto/hdl_checker](https://github.com/suoto/hdl_checker) Language Server.
 - Enable BSV tests on GitHub Actions
 
 ## [1.5.9] - 2022-11-12
 
+### Fixed
+
 - Revert [#331](https://github.com/mshr-h/vscode-verilog-hdl-support/issues/331) because instantiate module function was broken.
 
 ## [1.5.8] - 2022-11-12
 
+### Fixed
+
 - Fix [#332](https://github.com/mshr-h/vscode-verilog-hdl-support/issues/332)
 
 ## [1.5.7] - 2022-11-11
+
+### Added
 
 - Add toggle option for Language Server in config.
 - Add binary path option for Language Server in config.
@@ -92,17 +227,26 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ## [1.5.6] - 2022-11-11
 
+### Fixed
+
 - Fix [#326](https://github.com/mshr-h/vscode-verilog-hdl-support/issues/326)
 
 ## [1.5.5] - 2022-11-10
+
+### Changed
 
 - Do not load extension until supported file opened.
 - Address `workspace.rootPath` deprecation
 
 ## [1.5.4] - 2022-06-11
 
+### Added
+
 - Added the ability to disable Ctag [#281](https://github.com/mshr-h/vscode-verilog-hdl-support/pull/281)
 - Added the ability to specify PATH for linter [#282](https://github.com/mshr-h/vscode-verilog-hdl-support/pull/282)
+
+### Changed
+
 - Update dependent packages
 
 ## [1.5.3] - 2021-12-17

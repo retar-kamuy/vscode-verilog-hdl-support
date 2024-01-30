@@ -1,11 +1,13 @@
+// SPDX-License-Identifier: MIT
 import * as vscode from 'vscode';
 import { BsvInfoProviderManger } from '../BsvProvider';
 import { CtagsManager, Symbol } from '../ctags';
+import { Logger } from '../logger';
 
 export class VerilogCompletionItemProvider implements vscode.CompletionItemProvider {
-  private logger: vscode.LogOutputChannel;
+  private logger: Logger;
 
-  constructor(logger: vscode.LogOutputChannel) {
+  constructor(logger: Logger) {
     this.logger = logger;
   }
 
@@ -93,8 +95,8 @@ export class VerilogCompletionItemProvider implements vscode.CompletionItemProvi
 }
 
 export class BsvCompletionItemProvider implements vscode.CompletionItemProvider {
-  private logger: vscode.LogOutputChannel;
-  constructor(logger: vscode.LogOutputChannel) {
+  private logger: Logger;
+  constructor(logger: Logger) {
     this.logger = logger;
   }
 

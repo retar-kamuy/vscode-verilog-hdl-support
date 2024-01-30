@@ -1,7 +1,9 @@
+// SPDX-License-Identifier: MIT
 import * as vscode from 'vscode';
 import * as child_process from 'child_process';
 import * as path from 'path';
 import BaseLinter from './BaseLinter';
+import { Logger } from '../logger';
 
 export default class XvlogLinter extends BaseLinter {
   private configuration: vscode.WorkspaceConfiguration;
@@ -9,7 +11,7 @@ export default class XvlogLinter extends BaseLinter {
   private arguments: string;
   private includePath: string[];
 
-  constructor(diagnosticCollection: vscode.DiagnosticCollection, logger: vscode.LogOutputChannel) {
+  constructor(diagnosticCollection: vscode.DiagnosticCollection, logger: Logger) {
     super('xvlog', diagnosticCollection, logger);
     vscode.workspace.onDidChangeConfiguration(() => {
       this.updateConfig();
@@ -27,6 +29,13 @@ export default class XvlogLinter extends BaseLinter {
     this.includePath = path.map((includePath: string) => this.resolvePath(includePath));
   }
 
+  protected convertToSeverity(severityString: string): vscode.DiagnosticSeverity {
+    if (severityString === 'ERROR') {
+      return vscode.DiagnosticSeverity.Error;
+    }
+    return vscode.DiagnosticSeverity.Warning;
+  }
+
   protected lint(doc: vscode.TextDocument) {
     let binPath: string = path.join(this.linterInstalledPath, 'xvlog');
 
@@ -35,7 +44,7 @@ export default class XvlogLinter extends BaseLinter {
     if (doc.languageId === 'systemverilog') {
       args.push('-sv');
     }
-    args = args.concat(this.includePath.map((path: string) => '-i ' + path));
+    args = args.concat(this.includePath.map((path: string) => `-i "${path}"`));
     this.logger.warn(this.includePath.join(' '));
     args.push(this.arguments);
     args.push(`"${doc.fileName}"`);
@@ -55,18 +64,12 @@ export default class XvlogLinter extends BaseLinter {
           return;
         }
 
-        let severity =
-          match[1] === 'ERROR'
-            ? vscode.DiagnosticSeverity.Error
-            : vscode.DiagnosticSeverity.Warning;
-
         // Get filename and line number
         let _filename = match[4];
-        let linenoStr = match[5];
-        let lineno = parseInt(linenoStr) - 1;
+        let lineno = parseInt(match[5]) - 1;
 
         let diagnostic: vscode.Diagnostic = {
-          severity: severity,
+          severity: this.convertToSeverity(match[1]),
           code: match[2],
           message: '[' + match[2] + '] ' + match[3],
           range: new vscode.Range(lineno, 0, lineno, Number.MAX_VALUE),
